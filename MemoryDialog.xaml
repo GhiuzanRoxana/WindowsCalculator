@@ -1,0 +1,118 @@
+﻿<Window x:Class="Calculator.MemoryDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Calculator"
+        mc:Ignorable="d"
+        Title="MemoryDialog" Height="350" Width="250"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#FF1E1E1E">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <Style x:Key="MemoryItemStyle" TargetType="ListViewItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="60"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF2D2D2D"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#FF3D3D3D"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="MemoryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Width" Value="25"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                Padding="{TemplateBinding Padding}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FF3D3D3D"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="0">
+
+        <Button Content="✕" 
+                HorizontalAlignment="Right" 
+                VerticalAlignment="Top" 
+                Width="30" 
+                Height="30" 
+                Background="Transparent"
+                Foreground="White"
+                BorderThickness="0"
+                Click="CloseButton_Click"
+                Margin="0,5,5,0"/>
+        <ListView x:Name="MemoryListView" 
+                  Background="Transparent" 
+                  BorderThickness="0"
+                  Foreground="White"
+                  ItemContainerStyle="{StaticResource MemoryItemStyle}"
+                  MouseDoubleClick="MemoryListView_MouseDoubleClick" Margin="10,0,-31,0" SelectionChanged="MemoryListView_SelectionChanged">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="{Binding}" 
+                                   Grid.Column="0" 
+                                   FontSize="22" 
+                                   Foreground="White"
+                                   HorizontalAlignment="Right"/>
+
+                        <StackPanel Grid.Column="1" 
+                                    Orientation="Horizontal" 
+                                    HorizontalAlignment="Right" 
+                                    Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListViewItem}}, Path=IsMouseOver, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Button Content="MC" 
+                                    Style="{StaticResource MemoryButtonStyle}" 
+                                    Tag="{Binding}" 
+                                    Click="ClearItem_Click" 
+                                    ToolTip="Clear memory item"/>
+                            <Button Content="M+" 
+                                    Style="{StaticResource MemoryButtonStyle}" 
+                                    Tag="{Binding}" 
+                                    Click="AddToItem_Click" 
+                                    ToolTip="Add to memory"/>
+                            <Button Content="M-" 
+                                    Style="{StaticResource MemoryButtonStyle}" 
+                                    Tag="{Binding}" 
+                                    Click="SubtractFromItem_Click" 
+                                    ToolTip="Subtract from memory"/>
+                            <Button Content="🗑" 
+                                    Style="{StaticResource MemoryButtonStyle}" 
+                                    Tag="{Binding}" 
+                                    Click="DeleteItem_Click" 
+                                    ToolTip="Delete"/>
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Window>

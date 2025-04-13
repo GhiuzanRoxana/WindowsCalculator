@@ -1,0 +1,292 @@
+﻿<Window x:Class="Calculator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Calculator"
+        mc:Ignorable="d"
+        Title="Calculator" Height="600" Width="383">
+
+    <Window.Resources>
+        <Style x:Key="CalcButton" TargetType="Button">
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Background" Value="#FF2D2D2D"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Width" Value="75"/>
+        </Style>
+
+        <Style x:Key="SmallCalcButton" TargetType="Button" BasedOn="{StaticResource CalcButton}">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Width" Value="70"/>
+        </Style>
+
+        <Style x:Key="EqualsButton" TargetType="Button" BasedOn="{StaticResource CalcButton}">
+            <Setter Property="Background" Value="#FFE37C1D"/>
+        </Style>
+
+        <Style x:Key="StandardPanelStyle" TargetType="Grid">
+            <Setter Property="Visibility" Value="Visible"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsStandardMode}" Value="False">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ProgrammerPanelStyle" TargetType="Grid">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsStandardMode}" Value="False">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#FF1E1E1E">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" MinHeight="38.6"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Button Grid.Row="0"
+                Content="{Binding HamburgerLabel}"
+                Command="{Binding ToggleModeCommand}"
+                Background="Transparent"
+                Foreground="White"
+                FontSize="20"
+                BorderThickness="0"
+                Margin="-11,13,0,9"
+                HorizontalAlignment="Left" Width="153" RenderTransformOrigin="0.73,0.537">
+            <Button.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-0.196"/>
+                    <TranslateTransform X="0.002" Y="-0.123"/>
+                </TransformGroup>
+            </Button.RenderTransform>
+        </Button>
+
+
+        <Menu Grid.Row="0" Background="#FF2D2D2D" Foreground="Black" Margin="0,0,0,34">
+            <MenuItem Header="File">
+                <MenuItem Header="Cut" Command="{Binding CutCommand}"/>
+                <MenuItem Header="Copy" Command="{Binding CopyCommand}"/>
+                <MenuItem Header="Paste" Command="{Binding PasteCommand}"/>
+                <Separator/>
+                <MenuItem Header="Digit Grouping" IsCheckable="True" IsChecked="{Binding DigitGrouping, Mode=OneWay}"/>
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="About" Command="{Binding ShowAboutCommand}"/>
+            </MenuItem>
+        </Menu>
+
+        <Grid Grid.Row="1">
+            <Grid x:Name="StandardPanel" Style="{StaticResource StandardPanelStyle}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+
+                <Grid Grid.Row="1">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Right" Margin="10">
+                        <TextBlock Text="{Binding CurrentExpression}"
+                           FontSize="20"
+                           Foreground="LightGray"
+                           TextAlignment="Right"
+                           HorizontalAlignment="Right"
+                           Padding="0"/>
+
+                        <TextBlock Text="{Binding Display}"
+                           FontSize="48"
+                           Foreground="White"
+                           TextAlignment="Right"
+                           HorizontalAlignment="Right"
+                           Padding="0"/>
+                    </StackPanel>
+                </Grid>
+
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="10,5,0,0" Width="373">
+                    <Button Content="MC" Style="{StaticResource SmallCalcButton}" Command="{Binding MemoryClearCommand}" Height="19" Width="61" IsEnabled="{Binding HasMemoryValue}"/>
+                    <Button Content="MR" Style="{StaticResource SmallCalcButton}" Command="{Binding MemoryRecallCommand}" Width="53" Height="18" IsEnabled="{Binding HasMemoryValue}"/>
+                    <Button Content="M+" Style="{StaticResource SmallCalcButton}" Command="{Binding MemoryAddCommand}" Width="57"/>
+                    <Button Content="M-" Style="{StaticResource SmallCalcButton}" Command="{Binding MemorySubtractCommand}" Height="19" Width="66"/>
+                    <Button Content="MS" Style="{StaticResource SmallCalcButton}" Command="{Binding MemoryStoreCommand}"/>
+                    <Button Content="M>" Style="{StaticResource SmallCalcButton}" Command="{Binding MemoryShowCommand}" Height="20" Width="59"/>
+                </StackPanel>
+
+
+
+                <UniformGrid Grid.Row="3" Rows="1" Columns="4" Margin="5">
+                    <Button Content="%" Style="{StaticResource CalcButton}" Command="{Binding PercentageCommand}"/>
+                    <Button Content="CE" Style="{StaticResource CalcButton}" Command="{Binding ClearEntryCommand}"/>
+                    <Button Content="C"  Style="{StaticResource CalcButton}" Command="{Binding ClearCommand}"/>
+                    <Button Content="⌫" Style="{StaticResource CalcButton}" Command="{Binding BackspaceCommand}"/>
+
+                </UniformGrid>
+
+                <UniformGrid Grid.Row="4" Rows="1" Columns="4" Margin="5">
+                    <Button Content="1/x" Style="{StaticResource CalcButton}" Command="{Binding InverseCommand}"/>
+                    <Button Content="x²" Style="{StaticResource CalcButton}" Command="{Binding SquareCommand}"/>
+                    <Button Content="²√x" Style="{StaticResource CalcButton}" Command="{Binding SquareRootCommand}"/>
+                    <Button Content="÷"   Style="{StaticResource CalcButton}" Command="{Binding OperatorCommand}" CommandParameter="÷"/>
+                </UniformGrid>
+
+                <UniformGrid Grid.Row="5" Rows="1" Columns="4" Margin="5">
+                    <Button Content="7" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="7"/>
+                    <Button Content="8" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="8"/>
+                    <Button Content="9" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="9"/>
+                    <Button Content="×" Style="{StaticResource CalcButton}" Command="{Binding OperatorCommand}" CommandParameter="×"/>
+                </UniformGrid>
+
+                <UniformGrid Grid.Row="6" Rows="1" Columns="4" Margin="5">
+                    <Button Content="4" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="4"/>
+                    <Button Content="5" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="5"/>
+                    <Button Content="6" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="6"/>
+                    <Button Content="-" Style="{StaticResource CalcButton}" Command="{Binding OperatorCommand}" CommandParameter="-"/>
+                </UniformGrid>
+
+                <UniformGrid Grid.Row="7" Rows="1" Columns="4" Margin="5">
+                    <Button Content="1" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="1"/>
+                    <Button Content="2" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="2"/>
+                    <Button Content="3" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="3"/>
+                    <Button Content="+" Style="{StaticResource CalcButton}" Command="{Binding OperatorCommand}" CommandParameter="+"/>
+                </UniformGrid>
+
+                <UniformGrid Grid.Row="8" Rows="1" Columns="4" Margin="5">
+                    <Button Content="+/-" Style="{StaticResource CalcButton}" Command="{Binding ToggleSignCommand}"/>
+                    <Button Content="0"   Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="0"/>
+                    <Button Content="."   Style="{StaticResource CalcButton}" Command="{Binding DecimalCommand}"/>
+                    <Button Content="="   Style="{StaticResource EqualsButton}" Command="{Binding EqualsCommand}"/>
+                </UniformGrid>
+            </Grid>
+
+
+            <!-- Programmer Mode -->
+            <Grid x:Name="ProgrammerPanel" Style="{StaticResource ProgrammerPanelStyle}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="1">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Right" Margin="10">
+                        <TextBlock Text="{Binding CurrentExpression}"
+                           FontSize="20"
+                           Foreground="LightGray"
+                           TextAlignment="Right"
+                           HorizontalAlignment="Right"
+                           Padding="0"/>
+
+                        <TextBlock Text="{Binding Display}"
+                           FontSize="48"
+                           Foreground="White"
+                           TextAlignment="Right"
+                           HorizontalAlignment="Right"
+                           Padding="0"/>
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Left" Margin="10,5,0,0">
+                    <WrapPanel>
+                        <Button Content="HEX" Style="{StaticResource SmallCalcButton}" Command="{Binding ConvertToHexCommand}" IsEnabled="{Binding IsBaseSelectionEnabled}"/>
+                        <TextBlock Text="{Binding   BaseValues.HexValue}" FontSize="16" Foreground="White" Margin="5,0,10,0"/>
+                    </WrapPanel>
+
+                    <WrapPanel>
+                        <Button Content="DEC" Style="{StaticResource SmallCalcButton}" Command="{Binding ConvertToDecCommand}" IsEnabled="{Binding IsBaseSelectionEnabled}"/>
+                        <TextBlock Text="{Binding BaseValues.DecValue}" FontSize="16" Foreground="White" Margin="5,0,10,0"/>
+                    </WrapPanel>
+
+                    <WrapPanel Margin="0,5,0,0">
+                        <Button Content="OCT" Style="{StaticResource SmallCalcButton}" Command="{Binding ConvertToOctCommand}" IsEnabled="{Binding IsBaseSelectionEnabled}"/>
+                        <TextBlock Text="{Binding BaseValues.OctValue}" FontSize="16" Foreground="White" Margin="5,0,10,0"/>
+                    </WrapPanel>
+
+                    <WrapPanel Margin="0,5,0,0">
+                        <Button Content="BIN" Style="{StaticResource SmallCalcButton}" Command="{Binding ConvertToBinCommand}" IsEnabled="{Binding IsBaseSelectionEnabled}"/>
+                        <TextBlock Text="{Binding BaseValues.BinValue}" FontSize="16" Foreground="White" Margin="5,0,10,0"/>
+                    </WrapPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,5,10,10">
+                    <Button Content="MS" Style="{StaticResource SmallCalcButton}" Command="{Binding MemoryStoreCommand}" Width="70" Margin="0,0,10,0"/>
+                    <Button Content="M>" Style="{StaticResource SmallCalcButton}" Command="{Binding MemoryShowCommand}" Width="70"/>
+                </StackPanel>
+                
+                <UniformGrid Grid.Row="3" Rows="1" Columns="5" Margin="5">
+                    <Button Content="A" Style="{StaticResource CalcButton}" Command="{Binding HexNumberCommand}" CommandParameter="A" IsEnabled="{Binding IsButtonAEnabled}"/>
+                    <Button Content="&lt;&lt;" Style="{StaticResource CalcButton}" Command="{Binding ShiftLeftCommand}"/>
+                    <Button Content="&gt;&gt;" Style="{StaticResource CalcButton}" Command="{Binding ShiftRightCommand}"/>
+                    <Button Content="CE" Style="{StaticResource CalcButton}" Command="{Binding ClearEntryCommand}"/>
+                    <Button Content="⌫" Style="{StaticResource CalcButton}" Command="{Binding BackspaceCommand}"/>
+
+                </UniformGrid>
+
+                <UniformGrid Grid.Row="4" Rows="1" Columns="5" Margin="5">
+                    <Button Content="B" Style="{StaticResource CalcButton}" Command="{Binding HexNumberCommand}" CommandParameter="B" IsEnabled="{Binding IsButtonBEnabled}"/>
+                    <Button Content="(" Style="{StaticResource CalcButton}" Command="{Binding ParenthesisCommand}" CommandParameter="("/>
+                    <Button Content=")" Style="{StaticResource CalcButton}" Command="{Binding ParenthesisCommand}" CommandParameter=")"/>
+                    <Button Content="%" Style="{StaticResource CalcButton}" Command="{Binding PercentageCommand}"/>
+                    <Button Content="÷"   Style="{StaticResource CalcButton}" Command="{Binding OperatorCommand}" CommandParameter="÷"/>
+                </UniformGrid>
+
+                <UniformGrid Grid.Row="5" Rows="1" Columns="5" Margin="5">
+                    <Button Content="C" Style="{StaticResource CalcButton}" Command="{Binding HexNumberCommand}" CommandParameter="C" IsEnabled="{Binding IsButtonBEnabled}"/>
+                    <Button Content="7" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="7" IsEnabled="{Binding IsButton7Enabled}"/>
+                    <Button Content="8" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="8" IsEnabled="{Binding IsButton8Enabled}"/>
+                    <Button Content="9" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="9" IsEnabled="{Binding IsButton9Enabled}"/>
+                    <Button Content="×" Style="{StaticResource CalcButton}" Command="{Binding OperatorCommand}" CommandParameter="×"/>
+                </UniformGrid>
+
+                <UniformGrid Grid.Row="6" Rows="1" Columns="5" Margin="5">
+                    <Button Content="D" Style="{StaticResource CalcButton}" Command="{Binding HexNumberCommand}" CommandParameter="D" IsEnabled="{Binding IsButtonBEnabled}"/>
+                    <Button Content="4" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="4" IsEnabled="{Binding IsButton4Enabled}"/>
+                    <Button Content="5" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="5" IsEnabled="{Binding IsButton5Enabled}"/>
+                    <Button Content="6" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="6" IsEnabled="{Binding IsButton6Enabled}"/>
+                    <Button Content="-" Style="{StaticResource CalcButton}" Command="{Binding OperatorCommand}" CommandParameter="-"/>
+                </UniformGrid>
+
+                <UniformGrid Grid.Row="7" Rows="1" Columns="5" Margin="5">
+                    <Button Content="E" Style="{StaticResource CalcButton}" Command="{Binding HexNumberCommand}" CommandParameter="E" IsEnabled="{Binding IsButtonBEnabled}"/>
+                    <Button Content="1" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="1" IsEnabled="{Binding IsButton1Enabled}"/>
+                    <Button Content="2" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="2" IsEnabled="{Binding IsButton2Enabled}"/>
+                    <Button Content="3" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="3" IsEnabled="{Binding IsButton3Enabled}"/>
+                    <Button Content="+" Style="{StaticResource CalcButton}" Command="{Binding OperatorCommand}" CommandParameter="+"/>
+                </UniformGrid>
+
+                <UniformGrid Grid.Row="8" Rows="1" Columns="5" Margin="5">
+                    <Button Content="F" Style="{StaticResource CalcButton}" Command="{Binding HexNumberCommand}" CommandParameter="F" IsEnabled="{Binding IsButtonBEnabled}"/>
+                    <Button Content="+/-" Style="{StaticResource CalcButton}" Command="{Binding ToggleSignCommand}"/>
+                    <Button Content="0" Style="{StaticResource CalcButton}" Command="{Binding NumberCommand}" CommandParameter="0" IsEnabled="{Binding IsButton0Enabled}"/>
+                    <Button Content="." Style="{StaticResource CalcButton}" Command="{Binding DecimalCommand}" IsEnabled="{Binding IsDecimalPointEnabled}"/>
+                    <Button Content="=" Style="{StaticResource EqualsButton}" Command="{Binding EqualsCommand}"/>
+                </UniformGrid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
